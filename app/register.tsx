@@ -42,6 +42,18 @@ export default function RegisterScreen() {
     const isValidEmail = (email: string) =>
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+    const calcularEdad = (fecha: Date) => {
+        const hoy = new Date();
+        let edad = hoy.getFullYear() - fecha.getFullYear();
+        const mes = hoy.getMonth() - fecha.getMonth();
+
+        if (mes < 0 || (mes === 0 && hoy.getDate() < fecha.getDate())) {
+            edad--;
+        }
+
+        return edad;
+    };
+
     const handleRegister = () => {
         const {
             nombre, apellido1, apellido2, email, password, confirmPassword
@@ -54,6 +66,16 @@ export default function RegisterScreen() {
 
         if (!isAlphabetic(nombre) || !isAlphabetic(apellido1) || !isAlphabetic(apellido2)) {
             Alert.alert('Error', 'Nombre y apellidos sólo deben contener letras.');
+            return;
+        }
+
+        if (calcularEdad(date) < 18) {
+            Alert.alert('Edad mínima requerida', 'Debes tener al menos 18 años para registrarte.');
+            return;
+        }
+
+        if (!date) {
+            Alert.alert('Error', 'Selecciona una fecha de nacimiento válida.');
             return;
         }
 
@@ -213,16 +235,24 @@ export default function RegisterScreen() {
                 </TouchableOpacity>
 
                 {/* Link a Login */}
-                <Link href="/" asChild>
-                    <Text style={{
-                        color: tabIconSelected,
-                        textAlign: 'center',
-                        marginTop: 20,
-                    }}>
-                        ¿Ya tienes cuenta? Inicia sesión
-                    </Text>
-                </Link>
+                <Text style={{
+                    color: text,
+                    textAlign: 'center',
+                    marginTop: 20,
+                    opacity: 0.8
+                }}>
+                    ¿Ya tienes cuenta? {''}
+                    <Link href="/" asChild>
+                        <Text style={{
+                            color: tabIconSelected,
+                            textAlign: 'center',
+                            marginTop: 20,
+                        }}>
+                            Inicia sesión
+                        </Text>
+                    </Link>
+                </Text>
             </ScrollView>
-        </KeyboardAvoidingView>
+        </KeyboardAvoidingView >
     );
 }
