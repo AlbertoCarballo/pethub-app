@@ -106,7 +106,6 @@ export default function LoginScreen() {
           </Text>
         </Link>
       </Text>
-
     </View>
   );
 }

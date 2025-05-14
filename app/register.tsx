@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 
+
 export default function RegisterScreen() {
     const router = useRouter();
 
