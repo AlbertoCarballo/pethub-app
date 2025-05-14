@@ -1,13 +1,13 @@
-import { View, TextInput, TouchableOpacity, Text } from 'react-native';
-import { useTheme } from '../hooks/useTheme';
 import { Link } from 'expo-router';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useTheme } from '../hooks/useTheme';
 
 export default function LoginScreen() {
-  const { 
-    text, 
-    background, 
-    cardBackground, 
-    buttonPrimary, 
+  const {
+    text,
+    background,
+    cardBackground,
+    buttonPrimary,
     inputBorder,
     tabIconSelected
   } = useTheme();
@@ -31,7 +31,7 @@ export default function LoginScreen() {
       </Text>
 
       {/* Input Email */}
-      <TextInput 
+      <TextInput
         style={{
           width: '100%',
           height: 50,
@@ -42,15 +42,15 @@ export default function LoginScreen() {
           marginBottom: 15,
           backgroundColor: cardBackground,
           color: text,
-        }} 
-        placeholder="Correo electrónico" 
+        }}
+        placeholder="Correo electrónico"
         placeholderTextColor={text}
         keyboardType="email-address"
         autoCapitalize="none"
       />
 
       {/* Input Contraseña */}
-      <TextInput 
+      <TextInput
         style={{
           width: '100%',
           height: 50,
@@ -61,8 +61,8 @@ export default function LoginScreen() {
           marginBottom: 25,
           backgroundColor: cardBackground,
           color: text,
-        }} 
-        placeholder="Contraseña" 
+        }}
+        placeholder="Contraseña"
         placeholderTextColor={text}
         secureTextEntry
       />
@@ -92,7 +92,7 @@ export default function LoginScreen() {
         </TouchableOpacity>
       </Link>
 
-      {/* Enlace adicional (opcional) */}
+      {/* Enlace a registro */}
       <Text style={{
         color: text,
         textAlign: 'center',
@@ -100,10 +100,13 @@ export default function LoginScreen() {
         opacity: 0.8
       }}>
         ¿No tienes cuenta?{' '}
-        <Text style={{ color: tabIconSelected, fontWeight: '500' }}>
-          Regístrate
-        </Text>
+        <Link href="/register" asChild>
+          <Text style={{ color: tabIconSelected, fontWeight: '500' }}>
+            Regístrate
+          </Text>
+        </Link>
       </Text>
+
     </View>
   );
 }
