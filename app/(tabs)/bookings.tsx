@@ -31,7 +31,7 @@ const mockBookings = [
 ];
 
 export default function BookingsScreen() {
-  const { text, background, cardBackground, border, tabIconSelected } = useTheme();
+  const { text, background, cardBackground, border, tabIconSelected, buttonPrimary } = useTheme();
   const router = useRouter();
 
   const getStatusColor = (status: string) => {
@@ -140,6 +140,15 @@ export default function BookingsScreen() {
           </Text>
         </View>
       )}
+
+      {/* Botón flotante para agregar nueva reserva */}
+      <TouchableOpacity
+        style={[styles.floatingButton, { backgroundColor: buttonPrimary }]}
+        onPress={() => router.push('/agregarR&B')}
+        activeOpacity={0.8}
+      >
+        <Ionicons name="add" size={28} color="white" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -156,7 +165,7 @@ const styles = StyleSheet.create({
     marginBottom: 24
   },
   listContent: {
-    paddingBottom: 20
+    paddingBottom: 80 // Espacio extra para el botón flotante
   },
   bookingCard: {
     borderRadius: 16,
@@ -250,5 +259,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 8,
     opacity: 0.6
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   }
 });
