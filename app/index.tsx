@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -24,15 +25,21 @@ export default function LoginScreen() {
       Alert.alert('Error', 'Por favor ingresa correo y contraseña');
       return;
     }
-
+  
     try {
       const response = await axios.post('http://192.168.1.142:3001/api/usuarios/login', {
         correo: email,
         contraseña: password,
       });
-
-      // Si quieres guardar token o info, aquí la tienes en response.data
-
+  
+      console.log('Respuesta del servidor:', response.data);  // <-- Aquí imprimes el JSON recibido
+  
+      const usuario = response.data.usuario;
+  
+      await AsyncStorage.setItem('@idUsuario', usuario.id);
+      await AsyncStorage.setItem('@nombreUsuario', usuario.nombre);
+      await AsyncStorage.setItem('@correoUsuario', usuario.correo);
+  
       Alert.alert('Éxito', 'Bienvenido', [
         {
           text: 'OK',
@@ -40,14 +47,19 @@ export default function LoginScreen() {
         },
       ]);
     } catch (er) {
-      // Si el er viene con mensaje del backend:
-      if (er.response && er.response.data && er.response.data.er) {
-        Alert.alert('Error', er.response.data.er);
+      console.log('Error en login:', er);
+  
+      if (er.response && er.response.data && er.response.data.error) {
+        console.log('Error backend:', er.response.data.error);
+        Alert.alert('Error', er.response.data.error);
       } else {
         Alert.alert('Error', 'No se pudo conectar con el servidor');
       }
     }
   };
+  
+  
+  
 
   return (
     <View style={{
