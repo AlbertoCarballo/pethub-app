@@ -1,5 +1,7 @@
-import { Link } from 'expo-router';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import axios from 'axios';
+import { Link, useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 
 export default function LoginScreen() {
@@ -12,6 +14,41 @@ export default function LoginScreen() {
     tabIconSelected
   } = useTheme();
 
+  const router = useRouter();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Por favor ingresa correo y contraseña');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://192.168.1.142:3001/api/usuarios/login', {
+        correo: email,
+        contraseña: password,
+      });
+
+      // Si quieres guardar token o info, aquí la tienes en response.data
+
+      Alert.alert('Éxito', 'Bienvenido', [
+        {
+          text: 'OK',
+          onPress: () => router.replace('/home'),
+        },
+      ]);
+    } catch (er) {
+      // Si el er viene con mensaje del backend:
+      if (er.response && er.response.data && er.response.data.er) {
+        Alert.alert('Error', er.response.data.er);
+      } else {
+        Alert.alert('Error', 'No se pudo conectar con el servidor');
+      }
+    }
+  };
+
   return (
     <View style={{
       flex: 1,
@@ -19,7 +56,6 @@ export default function LoginScreen() {
       padding: 20,
       backgroundColor: background,
     }}>
-      {/* Título */}
       <Text style={{
         fontSize: 24,
         fontWeight: 'bold',
@@ -30,7 +66,6 @@ export default function LoginScreen() {
         PetsHub
       </Text>
 
-      {/* Input Email */}
       <TextInput
         style={{
           width: '100%',
@@ -47,9 +82,10 @@ export default function LoginScreen() {
         placeholderTextColor={text}
         keyboardType="email-address"
         autoCapitalize="none"
+        value={email}
+        onChangeText={setEmail}
       />
 
-      {/* Input Contraseña */}
       <TextInput
         style={{
           width: '100%',
@@ -65,11 +101,13 @@ export default function LoginScreen() {
         placeholder="Contraseña"
         placeholderTextColor={text}
         secureTextEntry
+        value={password}
+        onChangeText={setPassword}
       />
 
-      {/* Botón */}
-      <Link href="/home" asChild>
-        <TouchableOpacity style={{
+      <TouchableOpacity
+        onPress={handleLogin}
+        style={{
           width: '100%',
           height: 50,
           backgroundColor: buttonPrimary,
@@ -81,18 +119,17 @@ export default function LoginScreen() {
           shadowOpacity: 0.2,
           shadowRadius: 4,
           elevation: 3,
+        }}
+      >
+        <Text style={{
+          color: 'white',
+          fontWeight: 'bold',
+          fontSize: 16,
         }}>
-          <Text style={{
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: 16,
-          }}>
-            Iniciar sesión
-          </Text>
-        </TouchableOpacity>
-      </Link>
+          Iniciar sesión
+        </Text>
+      </TouchableOpacity>
 
-      {/* Enlace a registro */}
       <Text style={{
         color: text,
         textAlign: 'center',

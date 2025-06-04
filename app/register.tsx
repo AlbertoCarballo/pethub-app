@@ -1,14 +1,17 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
+import axios from 'axios';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
     Alert,
-    KeyboardAvoidingView, Platform,
+    KeyboardAvoidingView,
+    Platform,
     ScrollView,
-    Text, TextInput, TouchableOpacity
+    Text,
+    TextInput,
+    TouchableOpacity
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
-
 
 export default function RegisterScreen() {
     const router = useRouter();
@@ -47,15 +50,13 @@ export default function RegisterScreen() {
         const hoy = new Date();
         let edad = hoy.getFullYear() - fecha.getFullYear();
         const mes = hoy.getMonth() - fecha.getMonth();
-
         if (mes < 0 || (mes === 0 && hoy.getDate() < fecha.getDate())) {
             edad--;
         }
-
         return edad;
     };
 
-    const handleRegister = () => {
+    const handleRegister = async () => {
         const {
             nombre, apellido1, apellido2, email, password, confirmPassword
         } = form;
@@ -75,11 +76,6 @@ export default function RegisterScreen() {
             return;
         }
 
-        if (!date) {
-            Alert.alert('Error', 'Selecciona una fecha de nacimiento válida.');
-            return;
-        }
-
         if (!isValidEmail(email)) {
             Alert.alert('Error', 'Ingresa un correo electrónico válido.');
             return;
@@ -90,13 +86,23 @@ export default function RegisterScreen() {
             return;
         }
 
-        // Aquí iría la lógica para registrar al usuario (ej. API call)
-        Alert.alert('Éxito', 'Cuenta creada correctamente.', [
-            {
-                text: 'OK',
-                onPress: () => router.replace('/'), // <-- Redirige al login
-            },
-        ]);
+        try {
+            const response = await axios.post('http://192.168.1.142:3001/api/usuarios', {
+                nombres: nombre,
+                apellido1,
+                apellido2,
+                correo: email,
+                fechaNacimiento: date,
+                contraseña: password,
+            });
+
+            Alert.alert('Éxito', 'Cuenta creada correctamente.', [
+                { text: 'OK', onPress: () => router.replace('/') },
+            ]);
+        } catch (error: any) {
+            const mensaje = error?.response?.data?.error || error.message || 'Hubo un problema al registrar';
+            Alert.alert('Error', mensaje);
+        }
     };
 
     return (
@@ -115,7 +121,6 @@ export default function RegisterScreen() {
                     Crear cuenta
                 </Text>
 
-                {/* Inputs */}
                 {[
                     { key: 'nombre', placeholder: 'Nombre(s)', capitalize: 'words' },
                     { key: 'apellido1', placeholder: 'Primer apellido', capitalize: 'words' },
@@ -144,7 +149,6 @@ export default function RegisterScreen() {
                     />
                 ))}
 
-                {/* Fecha de nacimiento */}
                 <TouchableOpacity
                     onPress={() => setShowDatePicker(true)}
                     style={{
@@ -160,6 +164,7 @@ export default function RegisterScreen() {
                         {date ? date.toLocaleDateString() : 'Fecha de nacimiento'}
                     </Text>
                 </TouchableOpacity>
+
                 {showDatePicker && (
                     <DateTimePicker
                         mode="date"
@@ -173,7 +178,6 @@ export default function RegisterScreen() {
                     />
                 )}
 
-                {/* Contraseña */}
                 <TextInput
                     style={{
                         width: '100%',
@@ -209,7 +213,6 @@ export default function RegisterScreen() {
                     onChangeText={value => handleChange('confirmPassword', value)}
                 />
 
-                {/* Botón de registro */}
                 <TouchableOpacity
                     style={{
                         width: '100%',
@@ -235,14 +238,13 @@ export default function RegisterScreen() {
                     </Text>
                 </TouchableOpacity>
 
-                {/* Link a Login */}
                 <Text style={{
                     color: text,
                     textAlign: 'center',
                     marginTop: 20,
                     opacity: 0.8
                 }}>
-                    ¿Ya tienes cuenta? {''}
+                    ¿Ya tienes cuenta?{' '}
                     <Link href="/" asChild>
                         <Text style={{
                             color: tabIconSelected,
@@ -254,6 +256,6 @@ export default function RegisterScreen() {
                     </Link>
                 </Text>
             </ScrollView>
-        </KeyboardAvoidingView >
+        </KeyboardAvoidingView>
     );
 }
