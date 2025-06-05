@@ -36,9 +36,9 @@ export default function LoginScreen() {
   
       const usuario = response.data.usuario;
   
-      await AsyncStorage.setItem('@idUsuario', usuario.id);
-      await AsyncStorage.setItem('@nombreUsuario', usuario.nombre);
-      await AsyncStorage.setItem('@correoUsuario', usuario.correo);
+      await AsyncStorage.setItem('idUsuario', usuario.id);
+      await AsyncStorage.setItem('nombreUsuario', usuario.nombre);
+      await AsyncStorage.setItem('correoUsuario', usuario.correo);
   
       Alert.alert('Éxito', 'Bienvenido', [
         {

@@ -1,5 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
 
@@ -7,27 +10,65 @@ export default function ProfileScreen() {
   const { text, background, cardBackground, buttonPrimary, border, tabIconSelected } = useTheme();
   const router = useRouter();
 
-  // Datos del usuario (puedes reemplazar con datos reales)
+  const [users, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [pets, setPets] = useState([]);
+
+  useEffect(() => {
+    const fetchUserAndPets = async () => {
+      try {
+        const id = await AsyncStorage.getItem('idUsuario');
+        if (!id) throw new Error('No se encontró idUsuario en AsyncStorage');
+  
+        const userResponse = await axios.get(`http://192.168.1.142:3001/api/usuarios/${id}`);
+        setUser(userResponse.data);
+  
+        const petsResponse = await axios.get(`http://192.168.1.142:3001/api/mascotas/usuario/${id}`);
+        setPets(petsResponse.data);
+        console.log(pets);  // para debug
+      } catch (error) {
+        console.error('Error al obtener datos:', error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchUserAndPets();
+  }, []);
+
+  // Datos del usuario
   const user = {
-    name: 'María Rodríguez',
-    email: 'maria.rodriguez@example.com',
+    name: users
+      ? users.nombres + " " + users.apellido1 + (users.apellido2 ? " " + users.apellido2 : "")
+      : "",
+    email: users ? users.correo : "",
     phone: '+52 612 123 4567',
-    joinDate: 'Miembro desde Enero 2023',
-    pets: ['Max (Labrador)', 'Luna (Siamés)'],
+    joinDate: users && users.fechaNacimiento ? users.fechaNacimiento.split('T')[0] : "",
+    pets: pets.length > 0 ? pets.map(pet => `${pet.nombre} (${pet.tipo})`) : [],
     avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500',
     bookings: 12,
     favorites: 5
   };
-
+  
   const handleEditProfile = () => {
-    // Navegar a pantalla de edición
     // router.push('/profile/edit');
   };
 
   const handleLogout = () => {
-    // Lógica para cerrar sesión
     console.log('Cerrando sesión...');
   };
+
+  const handleAddPet = () => {
+    router.push('/others/pets');
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, {backgroundColor: background, justifyContent: 'center', alignItems: 'center'}]}>
+        <Text style={{color: text}}>Cargando...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView 
@@ -70,7 +111,7 @@ export default function ProfileScreen() {
         <View style={styles.infoItem}>
           <Ionicons name="paw-outline" size={20} color={text} style={styles.icon} />
           <Text style={[styles.infoText, { color: text }]}>
-            Mascotas: {user.pets.join(', ')}
+            Mascotas: {user.pets.length > 0 ? user.pets.join(', ') : '(No tienes mascotas)'}
           </Text>
         </View>
       </View>
@@ -98,9 +139,12 @@ export default function ProfileScreen() {
 
       {/* Opciones adicionales */}
       <View style={[styles.optionsSection, { backgroundColor: cardBackground, borderColor: border }]}>
-        <TouchableOpacity style={styles.optionItem}>
-          <Ionicons name="settings-outline" size={20} color={text} />
-          <Text style={[styles.optionText, { color: text }]}>Configuración</Text>
+        <TouchableOpacity 
+          style={styles.optionItem} 
+          onPress={handleAddPet}
+        >
+          <Ionicons name="paw-outline" size={20} color={text} />
+          <Text style={[styles.optionText, { color: text }]}>Agregar Mascota</Text>
           <Ionicons name="chevron-forward" size={16} color={text} style={{ opacity: 0.5 }} />
         </TouchableOpacity>
         
