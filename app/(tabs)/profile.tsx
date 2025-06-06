@@ -20,10 +20,10 @@ export default function ProfileScreen() {
         const id = await AsyncStorage.getItem('idUsuario');
         if (!id) throw new Error('No se encontró idUsuario en AsyncStorage');
   
-        const userResponse = await axios.get(`http://192.168.1.142:3001/api/usuarios/${id}`);
+        const userResponse = await axios.get(`http://192.168.1.66:3001/api/usuarios/${id}`);
         setUser(userResponse.data);
   
-        const petsResponse = await axios.get(`http://192.168.1.142:3001/api/mascotas/usuario/${id}`);
+        const petsResponse = await axios.get(`http://192.168.1.66:3001/api/mascotas/usuario/${id}`);
         setPets(petsResponse.data);
         console.log(pets);  // para debug
       } catch (error) {
@@ -126,6 +126,15 @@ export default function ProfileScreen() {
           <Ionicons name="create-outline" size={20} color="white" />
           <Text style={styles.buttonText}>Editar Perfil</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.editButton, { backgroundColor: buttonPrimary }]}
+          onPress={handleAddPet}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="paw-outline" size={20} color="white" />
+          <Text style={styles.buttonText}>Agregar Mascota</Text>
+        </TouchableOpacity>
         
         <TouchableOpacity 
           style={styles.logoutButton}
@@ -134,34 +143,6 @@ export default function ProfileScreen() {
         >
           <Ionicons name="log-out-outline" size={20} color={buttonPrimary} />
           <Text style={[styles.logoutText, { color: buttonPrimary }]}>Cerrar Sesión</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Opciones adicionales */}
-      <View style={[styles.optionsSection, { backgroundColor: cardBackground, borderColor: border }]}>
-        <TouchableOpacity 
-          style={styles.optionItem} 
-          onPress={handleAddPet}
-        >
-          <Ionicons name="paw-outline" size={20} color={text} />
-          <Text style={[styles.optionText, { color: text }]}>Agregar Mascota</Text>
-          <Ionicons name="chevron-forward" size={16} color={text} style={{ opacity: 0.5 }} />
-        </TouchableOpacity>
-        
-        <View style={[styles.divider, { backgroundColor: border }]} />
-        
-        <TouchableOpacity style={styles.optionItem}>
-          <Ionicons name="help-circle-outline" size={20} color={text} />
-          <Text style={[styles.optionText, { color: text }]}>Ayuda y Soporte</Text>
-          <Ionicons name="chevron-forward" size={16} color={text} style={{ opacity: 0.5 }} />
-        </TouchableOpacity>
-        
-        <View style={[styles.divider, { backgroundColor: border }]} />
-        
-        <TouchableOpacity style={styles.optionItem}>
-          <Ionicons name="document-text-outline" size={20} color={text} />
-          <Text style={[styles.optionText, { color: text }]}>Términos y Privacidad</Text>
-          <Ionicons name="chevron-forward" size={16} color={text} style={{ opacity: 0.5 }} />
         </TouchableOpacity>
       </View>
     </ScrollView>
