@@ -67,25 +67,27 @@ export default function AddRbnbForm({ onSubmit }: AddRbnbFormProps) {
       return;
     }
 
+    const payload = {
+      nombreLugar: form.place,
+      precioPorNoche: parseFloat(form.pricePerNight),
+      ubicacion: form.location,
+      numeroContacto: form.contactNumber,
+      descripcion: form.description,
+      amenidades: form.amenities.split(',').map((a) => a.trim()),
+      personaACargo: form.personInCharge,
+      imagen: form.photoUri,
+      // fechaPublicacion se genera automáticamente
+    };
+
+    console.log('Payload a enviar:', payload);
+
     setLoading(true);
     try {
-      const response = await axios.post('https://tu-backend.com/api/rbnb', {
-        place: form.place,
-        pricePerNight: form.pricePerNight,
-        contactNumber: form.contactNumber,
-        personInCharge: form.personInCharge,
-        amenities: form.amenities,
-        description: form.description,
-        location: form.location,
-        date: form.date.toISOString(),
-        photoUri: form.photoUri,
-      });
+      const response = await axios.post('http://192.168.1.152:3001/airbnb', payload); // Ajusta tu IP local
 
       if (response.status === 200 || response.status === 201) {
         Alert.alert('Éxito', 'RB&B guardado correctamente');
         onSubmit(form);
-        // Opcional: resetear el formulario aquí si quieres
-        // setForm({...});
       } else {
         Alert.alert('Error', 'No se pudo guardar el RB&B. Intenta de nuevo.');
       }
@@ -145,7 +147,7 @@ export default function AddRbnbForm({ onSubmit }: AddRbnbFormProps) {
 
       <TextInput
         style={styles.input}
-        placeholder="Amenidades"
+        placeholder="Amenidades (separadas por coma)"
         value={form.amenities}
         onChangeText={(text) => handleChange('amenities', text)}
         placeholderTextColor="#999"
@@ -213,7 +215,7 @@ export default function AddRbnbForm({ onSubmit }: AddRbnbFormProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F7FA', // fondo suave tipo Booking
+    backgroundColor: '#F5F7FA',
   },
   title: {
     fontSize: 26,

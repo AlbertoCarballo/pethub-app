@@ -93,7 +93,7 @@ export default function RegisterScreen() {
         }
 
         try {
-            const response = await axios.post('http://192.168.1.145:3001/api/usuarios', {
+            const response = await axios.post('http://192.168.1.152:3001/api/usuarios', {
                 nombres: nombre,
                 apellido1,
                 apellido2,
