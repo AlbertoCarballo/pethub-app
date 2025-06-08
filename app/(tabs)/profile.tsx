@@ -20,12 +20,13 @@ export default function ProfileScreen() {
         const id = await AsyncStorage.getItem('idUsuario');
         if (!id) throw new Error('No se encontró idUsuario en AsyncStorage');
   
-        const userResponse = await axios.get(`http://192.168.1.66:3001/api/usuarios/${id}`);
+        const userResponse = await axios.get(`http://192.168.1.145:3001/api/usuarios/${id}`);
         setUser(userResponse.data);
+        console.log(userResponse.data)
   
-        const petsResponse = await axios.get(`http://192.168.1.66:3001/api/mascotas/usuario/${id}`);
+        const petsResponse = await axios.get(`http://192.168.1.145:3001/api/mascotas/usuario/${id}`);
         setPets(petsResponse.data);
-        console.log(pets);  // para debug
+          // para debug
       } catch (error) {
         console.error('Error al obtener datos:', error.message);
       } finally {
@@ -42,13 +43,14 @@ export default function ProfileScreen() {
       ? users.nombres + " " + users.apellido1 + (users.apellido2 ? " " + users.apellido2 : "")
       : "",
     email: users ? users.correo : "",
-    phone: '+52 612 123 4567',
+    phone: users && users.celular ? "+52 1 " + users.celular : "",
     joinDate: users && users.fechaNacimiento ? users.fechaNacimiento.split('T')[0] : "",
     pets: pets.length > 0 ? pets.map(pet => `${pet.nombre} (${pet.tipo})`) : [],
     avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500',
     bookings: 12,
     favorites: 5
   };
+  
   
   const handleEditProfile = () => {
     // router.push('/profile/edit');

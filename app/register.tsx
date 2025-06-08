@@ -30,6 +30,7 @@ export default function RegisterScreen() {
         apellido1: '',
         apellido2: '',
         email: '',
+        celular: '',
         password: '',
         confirmPassword: '',
     });
@@ -41,7 +42,7 @@ export default function RegisterScreen() {
         setForm(prev => ({ ...prev, [field]: value }));
     };
 
-    const isAlphabetic = (text: string) => /^[a-zA-Zñ\s]+$/.test(text);
+    const isAlphabetic = (text: string) => /^[a-zA-ZñÑ\s]+$/.test(text);
 
     const isValidEmail = (email: string) =>
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -58,10 +59,10 @@ export default function RegisterScreen() {
 
     const handleRegister = async () => {
         const {
-            nombre, apellido1, apellido2, email, password, confirmPassword
+            nombre, apellido1, apellido2, email, celular, password, confirmPassword
         } = form;
 
-        if (!nombre || !apellido1 || !apellido2 || !email || !password || !confirmPassword || !date) {
+        if (!nombre || !apellido1 || !apellido2 || !email || !celular || !password || !confirmPassword || !date) {
             Alert.alert('Error', 'Por favor llena todos los campos.');
             return;
         }
@@ -81,17 +82,23 @@ export default function RegisterScreen() {
             return;
         }
 
+        if (!/^\d{10}$/.test(celular)) {
+            Alert.alert('Error', 'Ingresa un número de celular válido (10 dígitos).');
+            return;
+        }
+
         if (password !== confirmPassword) {
             Alert.alert('Error', 'Las contraseñas no coinciden.');
             return;
         }
 
         try {
-            const response = await axios.post('http://192.168.1.142:3001/api/usuarios', {
+            const response = await axios.post('http://192.168.1.145:3001/api/usuarios', {
                 nombres: nombre,
                 apellido1,
                 apellido2,
                 correo: email,
+                celular,
                 fechaNacimiento: date,
                 contraseña: password,
             });
@@ -125,7 +132,8 @@ export default function RegisterScreen() {
                     { key: 'nombre', placeholder: 'Nombre(s)', capitalize: 'words' },
                     { key: 'apellido1', placeholder: 'Primer apellido', capitalize: 'words' },
                     { key: 'apellido2', placeholder: 'Segundo apellido', capitalize: 'words' },
-                    { key: 'email', placeholder: 'Correo electrónico', capitalize: 'none', keyboardType: 'email-address' }
+                    { key: 'email', placeholder: 'Correo electrónico', capitalize: 'none', keyboardType: 'email-address' },
+                    { key: 'celular', placeholder: 'Celular', capitalize: 'none', keyboardType: 'phone-pad' },
                 ].map(({ key, placeholder, capitalize = 'none', keyboardType = 'default' }) => (
                     <TextInput
                         key={key}

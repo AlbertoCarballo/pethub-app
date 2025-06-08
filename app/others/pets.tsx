@@ -31,7 +31,7 @@ export default function RegisterPetScreen() {
                 return;
             }
 
-            const response = await axios.post('http://192.168.1.142:3001/api/mascotas', {
+            const response = await axios.post('http://192.168.1.145:3001/api/mascotas', {
                 nombre: name,
                 tipo: tipo,
                 raza: breed,

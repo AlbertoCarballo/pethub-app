@@ -1,12 +1,48 @@
 import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
 import { useRouter } from 'expo-router';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { mockPlaces } from '../../data/mockPlaces';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
 
 export default function HomeScreen() {
   const { text, background, cardBackground, border, tabIconSelected } = useTheme();
   const router = useRouter();
+
+  const [places, setPlaces] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchPlaces = async () => {
+      try {
+        const response = await axios.get('http://192.168.1.145:3001/airbnb');
+        setPlaces(response.data);
+      } catch (err) {
+        setError(err.message || 'Error al obtener lugares');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPlaces();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { backgroundColor: background, justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={tabIconSelected} />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, { backgroundColor: background, justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={{ color: text }}>Error: {error}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: background }]}>
@@ -15,63 +51,61 @@ export default function HomeScreen() {
       </Text>
 
       <FlatList
-        data={mockPlaces}
+        data={places}
         renderItem={({ item }) => (
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => router.push({
               pathname: '/place',
-              params: { id: item.id }
+              params: { id: item._id }
             })}
             activeOpacity={0.8}
           >
-            <View style={[styles.card, { 
-              backgroundColor: cardBackground, 
-              borderColor: border 
+            <View style={[styles.card, {
+              backgroundColor: cardBackground,
+              borderColor: border
             }]}>
-              {/* Imagen del lugar */}
               <Image
-                source={{ uri: item.image }}
+                source={{ uri: item.imagen }}
                 style={styles.cardImage}
               />
-              
-              {/* Contenido de la tarjeta */}
+
               <View style={styles.cardContent}>
                 <View style={styles.cardHeader}>
                   <Text style={[styles.cardTitle, { color: text }]}>
-                    {item.name}
+                    {item.nombreLugar}
                   </Text>
                   <View style={styles.ratingContainer}>
                     <Ionicons name="star" size={16} color={tabIconSelected} />
                     <Text style={[styles.ratingText, { color: text }]}>
-                      {item.rating}
+                      {item.rating ?? 'N/A'}
                     </Text>
                   </View>
                 </View>
-                
-                <Text 
+
+                <Text
                   style={[styles.cardLocation, { color: text }]}
                   numberOfLines={1}
                 >
-                  <Ionicons name="location-outline" size={14} />
-                  {' '}{item.location}
+                  <Ionicons name="location-outline" size={14} color={text} />
+                  {' '}{item.ubicacion}
                 </Text>
-                
-                <Text 
-                  style={[styles.cardDescription, { color: text }]} 
+
+                <Text
+                  style={[styles.cardDescription, { color: text }]}
                   numberOfLines={2}
                 >
-                  {item.description}
+                  {item.descripcion}
                 </Text>
-                
+
                 <View style={styles.cardFooter}>
                   <Text style={[styles.cardPrice, { color: tabIconSelected }]}>
-                    ${item.price} <Text style={{ color: text, opacity: 0.6 }}>/noche</Text>
+                    ${item.precio} <Text style={{ color: text, opacity: 0.6 }}>/noche</Text>
                   </Text>
                   <View style={styles.amenitiesContainer}>
                     <Ionicons name="paw-outline" size={14} color={text} style={{ opacity: 0.6 }} />
                     <Text style={[styles.amenitiesText, { color: text }]} numberOfLines={1}>
-                      {item.amenities.slice(0, 2).join(' • ')}
-                      {item.amenities.length > 2 ? ' + más' : ''}
+                      {item.amenidades?.slice(0, 2).join(' • ')}
+                      {item.amenidades && item.amenidades.length > 2 ? ' + más' : ''}
                     </Text>
                   </View>
                 </View>
@@ -79,13 +113,16 @@ export default function HomeScreen() {
             </View>
           </TouchableOpacity>
         )}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={item => item._id.toString()}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
     </View>
   );
 }
+
+// styles igual que antes...
+
 
 const styles = StyleSheet.create({
   container: {

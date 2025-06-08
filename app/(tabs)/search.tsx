@@ -1,39 +1,52 @@
 import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
+import { useRouter } from 'expo-router'; // <-- importar useRouter
 import { useEffect, useState } from 'react';
 import { FlatList, Image, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { mockPlaces } from '../../data/mockPlaces'; // Asegúrate de importar tus datos
 import { useTheme } from '../../hooks/useTheme';
 
 export default function SearchScreen() {
   const { text, background, cardBackground, inputBorder, tabIconSelected } = useTheme();
+  const router = useRouter(); // <-- crear instancia router
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
-  const [filteredPlaces, setFilteredPlaces] = useState(mockPlaces);
+  const [allPlaces, setAllPlaces] = useState([]); // almacena todos los lugares
+  const [filteredPlaces, setFilteredPlaces] = useState([]);
 
-  // Filtros disponibles
   const availableFilters = [
     'Con patio', '24/7', 'Veterinario', 'Piscina',
     'Aire acondicionado', 'Guardería', 'Paseos diarios'
   ];
 
-  // Efecto para filtrar lugares cuando cambia la búsqueda o los filtros
   useEffect(() => {
-    const results = mockPlaces.filter(place => {
-      // Filtro por texto de búsqueda
-      const matchesSearch = place.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        place.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const fetchPlaces = async () => {
+      try {
+        const response = await axios.get('http://192.168.1.145:3001/airbnb');
+        setAllPlaces(response.data);
+        setFilteredPlaces(response.data);
+      } catch (error) {
+        console.error('Error al cargar lugares:', error);
+      }
+    };
 
-      // Filtro por tags seleccionados
+    fetchPlaces();
+  }, []);
+
+  useEffect(() => {
+    const results = allPlaces.filter(place => {
+      const matchesSearch = place.nombreLugar.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        place.descripcion.toLowerCase().includes(searchQuery.toLowerCase());
+
       const matchesFilters = activeFilters.length === 0 ||
-        activeFilters.some(filter => place.amenities.includes(filter));
+        activeFilters.some(filter => place.amenidades.includes(filter));
 
       return matchesSearch && matchesFilters;
     });
 
     setFilteredPlaces(results);
-  }, [searchQuery, activeFilters]);
+  }, [searchQuery, activeFilters, allPlaces]);
 
-  // Manejar selección/deselección de filtros
   const toggleFilter = (filter: string) => {
     setActiveFilters(prev =>
       prev.includes(filter)
@@ -123,18 +136,21 @@ export default function SearchScreen() {
       {filteredPlaces.length > 0 ? (
         <FlatList
           data={filteredPlaces}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={item => item._id} // o item.id según tu API
           renderItem={({ item }) => (
-            <View style={{
-              backgroundColor: cardBackground,
-              borderRadius: 12,
-              marginBottom: 16,
-              overflow: 'hidden',
-              borderWidth: 1,
-              borderColor: inputBorder
-            }}>
+            <TouchableOpacity
+              onPress={() => router.push(`/place?id=${item._id}`)} // <--- navegación con id
+              style={{
+                backgroundColor: cardBackground,
+                borderRadius: 12,
+                marginBottom: 16,
+                overflow: 'hidden',
+                borderWidth: 1,
+                borderColor: inputBorder
+              }}
+            >
               <Image
-                source={{ uri: item.image }}
+                source={{ uri: item.imagen }} // nombre del campo en tu API
                 style={{ width: '100%', height: 150 }}
               />
               <View style={{ padding: 16 }}>
@@ -144,7 +160,7 @@ export default function SearchScreen() {
                   fontWeight: 'bold',
                   marginBottom: 4
                 }}>
-                  {item.name}
+                  {item.nombreLugar}
                 </Text>
                 <Text
                   style={{
@@ -154,7 +170,7 @@ export default function SearchScreen() {
                   }}
                   numberOfLines={2}
                 >
-                  {item.description}
+                  {item.descripcion}
                 </Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Ionicons name="location-outline" size={16} color={text} style={{ opacity: 0.6 }} />
@@ -164,11 +180,11 @@ export default function SearchScreen() {
                     marginLeft: 4,
                     fontSize: 14
                   }}>
-                    {item.location}
+                    {item.ubicacion}
                   </Text>
                 </View>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
       ) : (
