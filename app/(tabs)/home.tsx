@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -46,60 +47,49 @@ export default function HomeScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: background }]}>
-      <Text style={[styles.title, { color: text }]}>
-        Lugares disponibles
-      </Text>
+      <Text style={[styles.title, { color: text }]}>Lugares disponibles</Text>
 
       <FlatList
         data={places}
         renderItem={({ item }) => (
           <TouchableOpacity
-            onPress={() => router.push({
-              pathname: '/place',
-              params: { id: item._id }
-            })}
+            onPress={async () => {
+              try {
+                await AsyncStorage.setItem('selectedPlaceId', item._id);
+                router.push(`/others/details`);
+              } catch (e) {
+                console.error('Error guardando el ID en AsyncStorage', e);
+                router.push(`/others/details`);
+              }
+            }}
             activeOpacity={0.8}
           >
-            <View style={[styles.card, {
-              backgroundColor: cardBackground,
-              borderColor: border
-            }]}>
-              <Image
-                source={{ uri: item.imagen }}
-                style={styles.cardImage}
-              />
+            <View style={[styles.card, { backgroundColor: cardBackground, borderColor: border }]}>
+              <Image source={{ uri: item.imagen }} style={styles.cardImage} />
 
               <View style={styles.cardContent}>
                 <View style={styles.cardHeader}>
-                  <Text style={[styles.cardTitle, { color: text }]}>
-                    {item.nombreLugar}
-                  </Text>
+                  <Text style={[styles.cardTitle, { color: text }]}>{item.nombreLugar}</Text>
                   <View style={styles.ratingContainer}>
                     <Ionicons name="star" size={16} color={tabIconSelected} />
-                    <Text style={[styles.ratingText, { color: text }]}>
-                      {item.rating ?? 'N/A'}
-                    </Text>
+                    <Text style={[styles.ratingText, { color: text }]}>{item.rating ?? 'N/A'}</Text>
                   </View>
                 </View>
 
-                <Text
-                  style={[styles.cardLocation, { color: text }]}
-                  numberOfLines={1}
-                >
+                <Text style={[styles.cardLocation, { color: text }]} numberOfLines={1}>
                   <Ionicons name="location-outline" size={14} color={text} />
-                  {' '}{item.ubicacion}
+                  {' '}
+                  {item.ubicacion}
                 </Text>
 
-                <Text
-                  style={[styles.cardDescription, { color: text }]}
-                  numberOfLines={2}
-                >
+                <Text style={[styles.cardDescription, { color: text }]} numberOfLines={2}>
                   {item.descripcion}
                 </Text>
 
                 <View style={styles.cardFooter}>
                   <Text style={[styles.cardPrice, { color: tabIconSelected }]}>
-                    ${item.precio} <Text style={{ color: text, opacity: 0.6 }}>/noche</Text>
+                    ${item.precio}{' '}
+                    <Text style={{ color: text, opacity: 0.6 }}>/noche</Text>
                   </Text>
                   <View style={styles.amenitiesContainer}>
                     <Ionicons name="paw-outline" size={14} color={text} style={{ opacity: 0.6 }} />
@@ -113,16 +103,13 @@ export default function HomeScreen() {
             </View>
           </TouchableOpacity>
         )}
-        keyExtractor={item => item._id.toString()}
+        keyExtractor={(item) => item._id.toString()}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
     </View>
   );
 }
-
-// styles igual que antes...
-
 
 const styles = StyleSheet.create({
   container: {
