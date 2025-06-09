@@ -15,7 +15,7 @@ export default function BookingsScreen() {
   useEffect(() => {
     async function fetchBookings() {
       try {
-        const response = await fetch('http://192.168.1.152:3001/booking'); // Cambia la URL real
+        const response = await fetch('http://192.168.1.66:3001/booking'); // Cambia la URL real
         if (!response.ok) throw new Error('Error al cargar las reservas');
         const data = await response.json();
         setBookings(data);
@@ -38,7 +38,7 @@ export default function BookingsScreen() {
     return (
       <TouchableOpacity
         onPress={() => router.push({
-          pathname: '/bookingDetail',
+          pathname: '/others/details',
           params: { bookingId: item._id }
         })}
         activeOpacity={0.9}
@@ -120,7 +120,10 @@ export default function BookingsScreen() {
 
       <TouchableOpacity
         style={[styles.floatingButton, { backgroundColor: buttonPrimary }]}
-        onPress={() => router.push('/others/booking')}
+        onPress={() => router.push({
+          pathname: '/others/details',
+          params: { bookingId: item._id }
+        })}
         activeOpacity={0.8}
       >
         <Ionicons name="add" size={28} color="white" />
