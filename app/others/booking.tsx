@@ -5,8 +5,15 @@ import axios from 'axios';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert, StyleSheet, Text, TextInput, TouchableOpacity, View
+    Alert,
+    Keyboard,
+    StyleSheet,
+    Text, TextInput, TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
 } from 'react-native';
+
+
 
 export default function CreateBookingScreen() {
     const router = useRouter();
@@ -30,7 +37,7 @@ export default function CreateBookingScreen() {
         // Cargar lugares
         const fetchLugares = async () => {
             try {
-                const response = await axios.get('http://192.168.1.152:3001/airbnb');
+                const response = await axios.get('http://192.168.1.66:3001/airbnb');
                 setLugares(response.data);
             } catch (error) {
                 console.error(error);
@@ -103,7 +110,7 @@ export default function CreateBookingScreen() {
                 nombreUsuario
             };
 
-            await axios.post('http://192.168.1.152:3001/booking', nuevaReserva);
+            await axios.post('http://192.168.1.66:3001/booking', nuevaReserva);
             Alert.alert('Éxito', 'Reserva creada correctamente');
 
             // Reset campos
@@ -124,83 +131,87 @@ export default function CreateBookingScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Nueva Reserva</Text>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.container}>
+                <Text style={styles.title}>Nueva Reserva</Text>
 
-            <View style={[styles.pickerWrapper, { backgroundColor: 'black' }]}>
-                <Picker
-                    selectedValue={lugarSeleccionado}
-                    onValueChange={handleLugarChange}
-                    dropdownIconColor="white"
-                    style={{ color: 'white' }}
-                >
-                    <Picker.Item label="Selecciona un lugar" value="" color="#aaa" />
-                    {lugares.map((lugar) => (
-                        <Picker.Item
-                            key={lugar._id}
-                            label={lugar.nombreLugar ?? lugar.nombre ?? 'Sin nombre'}
-                            value={lugar.nombreLugar ?? lugar.nombre ?? ''}
-                            color="white"
-                        />
-                    ))}
-                </Picker>
+                {/* Picker */}
+                <View style={[styles.pickerWrapper, { backgroundColor: 'black' }]}>
+                    <Picker
+                        selectedValue={lugarSeleccionado}
+                        onValueChange={handleLugarChange}
+                        dropdownIconColor="white"
+                        style={{ color: 'white' }}
+                    >
+                        <Picker.Item label="Selecciona un lugar" value="" color="#aaa" />
+                        {lugares.map((lugar) => (
+                            <Picker.Item
+                                key={lugar._id}
+                                label={lugar.nombreLugar ?? lugar.nombre ?? 'Sin nombre'}
+                                value={lugar.nombreLugar ?? lugar.nombre ?? ''}
+                                color="white"
+                            />
+                        ))}
+                    </Picker>
+                </View>
+
+                {/* Fecha */}
+                <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.input}>
+                    <Text>{fecha.toDateString()}</Text>
+                </TouchableOpacity>
+                {showDatePicker && (
+                    <DateTimePicker
+                        value={fecha}
+                        mode="date"
+                        display="default"
+                        onChange={handleDateChange}
+                    />
+                )}
+
+                {/* Hora */}
+                <TouchableOpacity onPress={() => setShowTimePicker(true)} style={styles.input}>
+                    <Text>{hora}</Text>
+                </TouchableOpacity>
+                {showTimePicker && (
+                    <DateTimePicker
+                        value={new Date()}
+                        mode="time"
+                        is24Hour={true}
+                        display="default"
+                        onChange={handleTimeChange}
+                    />
+                )}
+
+                {/* Campos de texto */}
+                <TextInput
+                    style={styles.input}
+                    placeholder="Precio"
+                    keyboardType="numeric"
+                    value={precio}
+                    editable={false}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Días de estadía"
+                    keyboardType="numeric"
+                    value={diasEstadia}
+                    onChangeText={setDiasEstadia}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Dirección"
+                    value={direccion}
+                    editable={false}
+                />
+
+                {/* Botón */}
+                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                    <Text style={styles.buttonText}>Crear Reserva</Text>
+                </TouchableOpacity>
             </View>
-
-            <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.input}>
-                <Text>{fecha.toDateString()}</Text>
-            </TouchableOpacity>
-
-            {showDatePicker && (
-                <DateTimePicker
-                    value={fecha}
-                    mode="date"
-                    display="default"
-                    onChange={handleDateChange}
-                />
-            )}
-
-            <TouchableOpacity onPress={() => setShowTimePicker(true)} style={styles.input}>
-                <Text>{hora}</Text>
-            </TouchableOpacity>
-
-            {showTimePicker && (
-                <DateTimePicker
-                    value={new Date()}
-                    mode="time"
-                    is24Hour={true}
-                    display="default"
-                    onChange={handleTimeChange}
-                />
-            )}
-
-            <TextInput
-                style={styles.input}
-                placeholder="Precio"
-                keyboardType="numeric"
-                value={precio}
-                editable={false}
-            />
-
-            <TextInput
-                style={styles.input}
-                placeholder="Días de estadía"
-                keyboardType="numeric"
-                value={diasEstadia}
-                onChangeText={setDiasEstadia}
-            />
-
-            <TextInput
-                style={styles.input}
-                placeholder="Dirección"
-                value={direccion}
-                editable={false}
-            />
-
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                <Text style={styles.buttonText}>Crear Reserva</Text>
-            </TouchableOpacity>
-        </View>
+        </TouchableWithoutFeedback>
     );
+
 }
 
 const styles = StyleSheet.create({
