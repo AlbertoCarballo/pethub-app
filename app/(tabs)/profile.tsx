@@ -53,7 +53,7 @@ export default function ProfileScreen() {
   
   
   const handleEditProfile = () => {
-    // router.push('/profile/edit');
+    router.push('/others/edit');
   };
 
   const handleLogout = () => {
