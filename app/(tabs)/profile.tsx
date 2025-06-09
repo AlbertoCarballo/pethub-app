@@ -20,11 +20,11 @@ export default function ProfileScreen() {
         const id = await AsyncStorage.getItem('idUsuario');
         if (!id) throw new Error('No se encontró idUsuario en AsyncStorage');
   
-        const userResponse = await axios.get(`http://192.168.1.152:3001/api/usuarios/${id}`);
+        const userResponse = await axios.get(`http://192.168.1.66:3001/api/usuarios/${id}`);
         setUser(userResponse.data);
         console.log(userResponse.data)
   
-        const petsResponse = await axios.get(`http://192.168.1.152:3001/api/mascotas/usuario/${id}`);
+        const petsResponse = await axios.get(`http://192.168.1.66:3001/api/mascotas/usuario/${id}`);
         setPets(petsResponse.data);
           // para debug
       } catch (error) {
@@ -46,7 +46,7 @@ export default function ProfileScreen() {
     phone: users && users.celular ? "+52 1 " + users.celular : "",
     joinDate: users && users.fechaNacimiento ? users.fechaNacimiento.split('T')[0] : "",
     pets: pets.length > 0 ? pets.map(pet => `${pet.nombre} (${pet.tipo})`) : [],
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500',
+    avatar: 'https://static.vecteezy.com/system/resources/previews/024/983/914/non_2x/simple-user-default-icon-free-png.png',
     bookings: 12,
     favorites: 5
   };
