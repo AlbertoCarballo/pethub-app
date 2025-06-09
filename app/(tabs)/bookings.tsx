@@ -15,7 +15,7 @@ export default function BookingsScreen() {
   useEffect(() => {
     async function fetchBookings() {
       try {
-        const response = await fetch('http://192.168.1.66:3001/booking'); // Cambia la URL real
+        const response = await fetch('http://192.168.1.145:3001/booking'); // Cambia la URL real
         if (!response.ok) throw new Error('Error al cargar las reservas');
         const data = await response.json();
         setBookings(data);

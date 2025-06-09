@@ -22,7 +22,7 @@ export default function SearchScreen() {
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
-        const response = await axios.get('http://192.168.1.152:3001/airbnb');
+        const response = await axios.get('http://192.168.1.145:3001/airbnb');
         setAllPlaces(response.data);
         setFilteredPlaces(response.data);
       } catch (error) {

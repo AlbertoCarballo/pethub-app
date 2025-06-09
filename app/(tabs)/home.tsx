@@ -17,7 +17,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
-        const response = await axios.get('http://192.168.1.152:3001/airbnb');
+        const response = await axios.get('http://192.168.1.145:3001/airbnb');
         setPlaces(response.data);
       } catch (err) {
         setError(err.message || 'Error al obtener lugares');
@@ -56,10 +56,10 @@ export default function HomeScreen() {
             onPress={async () => {
               try {
                 await AsyncStorage.setItem('selectedPlaceId', item._id);
-                router.push(`/others/details`);
+                router.push(`/others/detailAirB&B`);
               } catch (e) {
                 console.error('Error guardando el ID en AsyncStorage', e);
-                router.push(`/others/details`);
+                router.push(`/others/detailAirB&B`);
               }
             }}
             activeOpacity={0.8}
