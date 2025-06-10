@@ -1,7 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
 
 export default function BookingsScreen() {
@@ -15,7 +22,7 @@ export default function BookingsScreen() {
   useEffect(() => {
     async function fetchBookings() {
       try {
-        const response = await fetch('http://192.168.1.145:3001/booking'); // Cambia la URL real
+        const response = await fetch('http://192.168.1.152:3001/booking');
         if (!response.ok) throw new Error('Error al cargar las reservas');
         const data = await response.json();
         setBookings(data);
@@ -28,59 +35,50 @@ export default function BookingsScreen() {
     fetchBookings();
   }, []);
 
-  // Función para formatear fecha
   const formatDate = (isoDate) => {
     const date = new Date(isoDate);
     return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
-  const renderBookingItem = ({ item }) => {
-    return (
-      <TouchableOpacity
-        onPress={() => router.push({
-          pathname: '/others/details',
-          params: { bookingId: item._id }
-        })}
-        activeOpacity={0.9}
-      >
-        <View style={[styles.bookingCard, { backgroundColor: cardBackground, borderColor: border }]}>
-          <View style={styles.cardContent}>
-            <Text style={[styles.placeName, { color: text }]}>{item.nombreLugar}</Text>
-            
-            <View style={styles.bookingInfo}>
-              <View style={styles.infoRow}>
-                <Ionicons name="calendar-outline" size={16} color={text} style={styles.icon} />
-                <Text style={[styles.infoText, { color: text }]}>{formatDate(item.fecha)}</Text>
-              </View>
-              
-              <View style={styles.infoRow}>
-                <Ionicons name="time-outline" size={16} color={text} style={styles.icon} />
-                <Text style={[styles.infoText, { color: text }]}>{item.hora || 'Hora no especificada'}</Text>
-              </View>
+  const renderBookingItem = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => router.push('/others/details')}
+      activeOpacity={0.9}
+    >
+      <View style={[styles.bookingCard, { backgroundColor: cardBackground, borderColor: border }]}>
+        <View style={styles.cardContent}>
+          <Text style={[styles.placeName, { color: text }]}>{item.nombreLugar}</Text>
 
-              <View style={styles.infoRow}>
-                <Ionicons name="time-outline" size={16} color={text} style={styles.icon} />
-                <Text style={[styles.infoText, { color: text }]}>
-                  {item.diasEstadia} {item.diasEstadia > 1 ? 'días' : 'día'}
-                </Text>
-              </View>
+          <View style={styles.bookingInfo}>
+            <View style={styles.infoRow}>
+              <Ionicons name="calendar-outline" size={16} color={text} style={styles.icon} />
+              <Text style={[styles.infoText, { color: text }]}>{formatDate(item.fecha)}</Text>
             </View>
-            
-            <View style={styles.cardFooter}>
-              <Text style={[styles.totalText, { color: tabIconSelected }]}>
-                ${item.precio.toFixed(2)}
+
+            <View style={styles.infoRow}>
+              <Ionicons name="time-outline" size={16} color={text} style={styles.icon} />
+              <Text style={[styles.infoText, { color: text }]}>{item.hora || 'Hora no especificada'}</Text>
+            </View>
+
+            <View style={styles.infoRow}>
+              <Ionicons name="time-outline" size={16} color={text} style={styles.icon} />
+              <Text style={[styles.infoText, { color: text }]}>
+                {item.diasEstadia} {item.diasEstadia > 1 ? 'días' : 'día'}
               </Text>
-              
-              <View style={styles.actionButton}>
-                <Text style={[styles.actionText, { color: text }]}>Ver detalles</Text>
-                <Ionicons name="chevron-forward" size={16} color={tabIconSelected} />
-              </View>
+            </View>
+          </View>
+
+          <View style={styles.cardFooter}>
+            <Text style={[styles.totalText, { color: tabIconSelected }]}>${item.precio.toFixed(2)}</Text>
+            <View style={styles.actionButton}>
+              <Text style={[styles.actionText, { color: text }]}>Ver detalles</Text>
+              <Ionicons name="chevron-forward" size={16} color={tabIconSelected} />
             </View>
           </View>
         </View>
-      </TouchableOpacity>
-    );
-  };
+      </View>
+    </TouchableOpacity>
+  );
 
   if (loading) {
     return (
@@ -101,12 +99,12 @@ export default function BookingsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: background }]}>
       <Text style={[styles.title, { color: text }]}>Mis Reservas</Text>
-      
+
       {bookings.length > 0 ? (
         <FlatList
           data={bookings}
           renderItem={renderBookingItem}
-          keyExtractor={item => item._id}
+          keyExtractor={(_, index) => index.toString()}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
         />
@@ -120,10 +118,7 @@ export default function BookingsScreen() {
 
       <TouchableOpacity
         style={[styles.floatingButton, { backgroundColor: buttonPrimary }]}
-        onPress={() => router.push({
-          pathname: '/others/details',
-          params: { bookingId: item._id }
-        })}
+        onPress={() => router.push('/others/booking')}
         activeOpacity={0.8}
       >
         <Ionicons name="add" size={28} color="white" />
@@ -150,8 +145,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     marginBottom: 16,
-    padding: 16,
-    borderColor: '#ccc'
+    padding: 16
   },
   cardContent: {},
   placeName: {
@@ -224,6 +218,6 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
-    shadowRadius: 4,
+    shadowRadius: 4
   }
 });

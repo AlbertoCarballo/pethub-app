@@ -83,7 +83,7 @@ export default function AddRbnbForm({ onSubmit }: AddRbnbFormProps) {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://192.168.1.145:3001/airbnb', payload); // Ajusta tu IP local
+      const response = await axios.post('http://192.168.1.152:3001/airbnb', payload); // Ajusta tu IP local
 
       if (response.status === 200 || response.status === 201) {
         Alert.alert('Éxito', 'RB&B guardado correctamente');

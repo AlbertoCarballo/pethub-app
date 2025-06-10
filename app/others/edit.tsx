@@ -27,7 +27,7 @@ export default function EditProfileScreen() {
                 const id = await AsyncStorage.getItem('idUsuario');
                 if (!id) throw new Error('ID no encontrado');
 
-                const res = await axios.get(`http://192.168.1.145:3001/api/usuarios/${id}`);
+                const res = await axios.get(`http://192.168.1.152:3001/api/usuarios/${id}`);
                 setForm({
                     nombres: res.data.nombres || '',
                     apellido1: res.data.apellido1 || '',
@@ -55,7 +55,7 @@ export default function EditProfileScreen() {
             const id = await AsyncStorage.getItem('idUsuario');
             if (!id) throw new Error('ID no encontrado');
 
-            await axios.put(`http://192.168.1.145:3001/api/usuarios/${id}`, form);
+            await axios.put(`http://192.168.1.152:3001/api/usuarios/${id}`, form);
             Alert.alert('Éxito', 'Perfil actualizado correctamente');
             router.push('/(tabs)/profile');
         } catch (error) {

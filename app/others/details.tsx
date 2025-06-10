@@ -14,7 +14,7 @@ export default function DetailsScreen() {
   useEffect(() => {
     async function fetchBooking() {
       try {
-        const response = await fetch(`http://192.168.1.145:3001/booking/${bookingId}`);
+        const response = await fetch(`http://192.168.1.152:3001/booking/${bookingId}`);
         if (!response.ok) throw new Error('No se pudo obtener la reserva');
         const data = await response.json();
         setBooking(data);

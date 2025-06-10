@@ -20,11 +20,11 @@ export default function ProfileScreen() {
         const id = await AsyncStorage.getItem('idUsuario');
         if (!id) throw new Error('No se encontró idUsuario en AsyncStorage');
   
-        const userResponse = await axios.get(`http://192.168.1.145:3001/api/usuarios/${id}`);
+        const userResponse = await axios.get(`http://192.168.1.152:3001/api/usuarios/${id}`);
         setUser(userResponse.data);
         console.log(userResponse.data)
   
-        const petsResponse = await axios.get(`http://192.168.1.145:3001/api/mascotas/usuario/${id}`);
+        const petsResponse = await axios.get(`http://192.168.1.152:3001/api/mascotas/usuario/${id}`);
         setPets(petsResponse.data);
           // para debug
       } catch (error) {

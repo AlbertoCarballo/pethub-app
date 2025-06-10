@@ -18,7 +18,7 @@ export default function AirbnbDetails() {
                 const id = await AsyncStorage.getItem('selectedPlaceId');
                 if (!id) throw new Error('ID no encontrado en AsyncStorage');
 
-                const response = await axios.get(`http://192.168.1.145:3001/airbnb/${id}`);
+                const response = await axios.get(`http://192.168.1.152:3001/airbnb/${id}`);
                 setPlace(response.data);
             } catch (err) {
                 setError(err.message || 'Error al obtener los detalles del lugar');

@@ -37,8 +37,9 @@ export default function CreateBookingScreen() {
         // Cargar lugares
         const fetchLugares = async () => {
             try {
-                const response = await axios.get('http://192.168.1.145:3001/airbnb');
+                const response = await axios.get('http://192.168.1.152:3001/airbnb');
                 setLugares(response.data);
+                console.log(response.data)
             } catch (error) {
                 console.error(error);
                 Alert.alert('Error', 'No se pudieron cargar los lugares');
@@ -110,7 +111,7 @@ export default function CreateBookingScreen() {
                 nombreUsuario
             };
 
-            await axios.post('http://192.168.1.66:3001/booking', nuevaReserva);
+            await axios.post('http://192.168.1.152:3001/booking', nuevaReserva);
             Alert.alert('Éxito', 'Reserva creada correctamente');
 
             // Reset campos
