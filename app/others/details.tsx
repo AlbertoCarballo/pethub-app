@@ -1,10 +1,9 @@
-import { useLocalSearchParams } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
 
 export default function DetailsScreen() {
-  const { bookingId } = useLocalSearchParams();
   const { text, background, cardBackground, border, tabIconSelected } = useTheme();
 
   const [booking, setBooking] = useState(null);
@@ -14,8 +13,12 @@ export default function DetailsScreen() {
   useEffect(() => {
     async function fetchBooking() {
       try {
+        const bookingId = await AsyncStorage.getItem('bookingId');
+        if (!bookingId) throw new Error('ID de reserva no encontrado');
+
         const response = await fetch(`http://192.168.1.152:3001/booking/${bookingId}`);
         if (!response.ok) throw new Error('No se pudo obtener la reserva');
+
         const data = await response.json();
         setBooking(data);
       } catch (err) {
@@ -25,10 +28,8 @@ export default function DetailsScreen() {
       }
     }
 
-    if (bookingId) {
-      fetchBooking();
-    }
-  }, [bookingId]);
+    fetchBooking();
+  }, []);
 
   const formatDate = (isoDate) => {
     const date = new Date(isoDate);

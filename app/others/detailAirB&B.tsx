@@ -46,6 +46,9 @@ export default function AirbnbDetails() {
         );
     }
 
+    // Aquí usamos precio o precioPorNoche
+    const price = place.precio ?? place.precioPorNoche ?? 'N/A';
+
     return (
         <ScrollView style={[styles.container, { backgroundColor: background }]}>
             <Image source={{ uri: place.imagen }} style={styles.image} />
@@ -59,7 +62,7 @@ export default function AirbnbDetails() {
                 <Text style={[styles.description, { color: text }]}>{place.descripcion}</Text>
 
                 <Text style={[styles.price, { color: tabIconSelected }]}>
-                    ${place.precio}
+                    ${price}
                     <Text style={{ color: text, opacity: 0.6 }}> / noche</Text>
                 </Text>
 

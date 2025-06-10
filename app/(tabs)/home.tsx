@@ -3,7 +3,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
 
 export default function HomeScreen() {
@@ -88,7 +96,7 @@ export default function HomeScreen() {
 
                 <View style={styles.cardFooter}>
                   <Text style={[styles.cardPrice, { color: tabIconSelected }]}>
-                    ${item.precio}{' '}
+                    ${item.precio ?? item.precioPorNoche}{' '}
                     <Text style={{ color: text, opacity: 0.6 }}>/noche</Text>
                   </Text>
                   <View style={styles.amenitiesContainer}>

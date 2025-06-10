@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -40,9 +41,18 @@ export default function BookingsScreen() {
     return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
+  const handlePress = async (bookingId) => {
+    try {
+      await AsyncStorage.setItem('bookingId', bookingId);
+      router.push('/others/details');
+    } catch (error) {
+      console.error('Error guardando el ID en AsyncStorage:', error);
+    }
+  };
+
   const renderBookingItem = ({ item }) => (
     <TouchableOpacity
-      onPress={() => router.push('/others/details')}
+      onPress={() => handlePress(item._id)}
       activeOpacity={0.9}
     >
       <View style={[styles.bookingCard, { backgroundColor: cardBackground, borderColor: border }]}>
